@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import mongoose from 'mongoose';
+import userRoute from './routers/userRoute.js';
 
 const app = express();
 const PORT = 5000
@@ -17,3 +18,5 @@ connection.once('open',()=>{
 })
 
 app.use(bodyParser.json());
+
+app.use("/api/users",userRoute);
