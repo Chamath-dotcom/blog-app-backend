@@ -16,3 +16,23 @@ export function registerUser(req,res){
     }
   )
 }
+export function loginUser(req,res){
+    const userData =req.body;
+    User.findOne({email: userData.email})
+    .then((user)=>{
+        if(user ==null)
+        {   
+        res.status(404).json({error :"user not found"});
+        }else
+        {
+        const isCorrectPassword =bcrypt.compareSync(userData.password,user.password)
+        if(isCorrectPassword){
+            res.json({message :`${user.firstName} loged`})
+        }else
+        {
+        res.json({error :"incorrect password"});
+        }
+        }
+        
+    })
+}
