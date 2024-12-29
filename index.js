@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import userRoute from './routers/userRoute.js';
 import jwt from 'jsonwebtoken'
+import productRoute from './routers/productRoute.js';
 
 const app = express();
 const PORT = 5000
@@ -42,3 +43,4 @@ app.use((req,res,next)=>{
 })
 
 app.use("/api/users",userRoute);
+app.use("/api/product",productRoute);
