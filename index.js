@@ -4,6 +4,9 @@ import mongoose from 'mongoose';
 import userRoute from './routers/userRoute.js';
 import jwt from 'jsonwebtoken'
 import productRoute from './routers/productRoute.js';
+import dotenv from 'dotenv'
+
+dotenv.config();
 
 const app = express();
 const PORT = 5000
@@ -11,7 +14,7 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-const mongoUrl = "mongodb+srv://admin:123@cluster0.f1hjr.mongodb.net/kv_audio?retryWrites=true&w=majority&appName=Cluster0";
+const mongoUrl = process.env.MONGO_URL;
 mongoose.connect(mongoUrl);
 const connection =mongoose.connection;
 connection.once('open',()=>{
@@ -25,7 +28,7 @@ app.use((req,res,next)=>{
 
     if(token!=null){
         token =token.replace("Bearer ", "");
-        jwt.verify(token,"kv-audio-byCK",
+        jwt.verify(token,process.env.SECRET_KEY,
             (err,decoded)=>
             {
             if(!err)

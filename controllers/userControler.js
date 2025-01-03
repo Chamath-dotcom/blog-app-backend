@@ -1,6 +1,10 @@
 import bcrypt from 'bcrypt'; 
 import User from '../models/user.js';
 import jwt from 'jsonwebtoken';
+import dotenv  from 'dotenv';
+
+dotenv.config();
+
 export function registerUser(req,res){
   const userData =req.body;
   const salt =bcrypt.genSaltSync(10);
@@ -32,7 +36,7 @@ export function loginUser(req,res){
                 lastName:user.lastName,
                 email:user.email,
                 role:user.role
-            },"kv-audio-byCK")
+            },process.env.SECRET_KEY)
             res.json({message :`${user.firstName} loged`,token :token})
         }else
         {
