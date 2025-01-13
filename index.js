@@ -5,7 +5,7 @@ import userRoute from './routers/userRoute.js';
 import jwt from 'jsonwebtoken'
 import productRoute from './routers/productRoute.js';
 import dotenv from 'dotenv'
-
+import reviewRoute from './routers/reviewRoute.js';
 
 dotenv.config();
 
@@ -48,3 +48,4 @@ app.use((req,res,next)=>{
 
 app.use("/api/users",userRoute);
 app.use("/api/product",productRoute);
+app.use("/api/review",reviewRoute);

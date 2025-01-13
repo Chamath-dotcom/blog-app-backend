@@ -10,10 +10,6 @@ const reviewSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    review:{
-        type: String,
-        required: true
-    },
     rating:{
         type: Number,
         required: true
@@ -22,6 +18,20 @@ const reviewSchema = new mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
+    },
+    profilePicture:{
+        type: String,
+        required: true,
+        default: "https://www.shutterstock.com/image-vector/user-profile-icon-vector-avatar-600nw-2247726673.jpg"
+    },
+    isApproved:{
+        type: Boolean,
+        default: false,
+        required: true
+    },
+    comment:{
+        type: String,
+        required: true
     }
 })
 
