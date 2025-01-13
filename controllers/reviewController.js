@@ -24,3 +24,34 @@ export function addReview(req, res) {
 
     
 }
+
+export function getReviews(req, res) {
+    const user = req.user;
+
+    if (user==null ||user.role !=="admin"){
+        Review.findOne({isApproved : true}).then((reviews)=>{
+            res.json(reviews);
+            return;
+        })
+    }else{
+        Review.find().then((reviews)=>{
+            res.json(reviews);
+            return;
+        })
+    }
+}
+export function deleteReview(req, res) {
+    const user = req.user;
+    const email = req.params.email;
+    if( user.role =="admin" || user.email==email){
+    Review.deleteOne({email:email})
+    .then((review)=>{
+        res.json({message:"your review has been deleted"})
+    })
+    .catch((err)=>{
+        res.json({message:"review deletion failed!",err})
+    })
+    }else{
+        res.status(403).json({message:"You are not authorized to delete this review"})
+    }
+}
