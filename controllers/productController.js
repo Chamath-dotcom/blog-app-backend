@@ -1,7 +1,7 @@
 import Product from "../models/product.js";
 
 
-export default  function addProduct(req,res){
+export function addProduct(req,res){
     console.log(req.user);
     if(req.user == null)
     {

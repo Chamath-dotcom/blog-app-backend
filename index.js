@@ -5,7 +5,7 @@ import userRoute from './routers/userRoute.js';
 import jwt from 'jsonwebtoken'
 import productRoute from './routers/productRoute.js';
 import dotenv from 'dotenv'
-import reviewRouter from "./routes/reviewRouter.js";
+
 
 dotenv.config();
 
@@ -15,7 +15,7 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-const mongoUrl = process.env.MONGO_URL;
+const mongoUrl = "mongodb+srv://admin:123@cluster0.f1hjr.mongodb.net/kv_audio?retryWrites=true&w=majority&appName=Cluster0";
 mongoose.connect(mongoUrl);
 const connection =mongoose.connection;
 connection.once('open',()=>{
@@ -29,7 +29,7 @@ app.use((req,res,next)=>{
 
     if(token!=null){
         token =token.replace("Bearer ", "");
-        jwt.verify(token,process.env.SECRET_KEY,
+        jwt.verify(token,"kv-audio-byCK",
             (err,decoded)=>
             {
             if(!err)
@@ -48,4 +48,3 @@ app.use((req,res,next)=>{
 
 app.use("/api/users",userRoute);
 app.use("/api/product",productRoute);
-app.use("/api/reviews", reviewRouter);
