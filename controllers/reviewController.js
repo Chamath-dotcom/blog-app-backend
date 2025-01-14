@@ -43,6 +43,10 @@ export function getReviews(req, res) {
 export function deleteReview(req, res) {
     const user = req.user;
     const email = req.params.email;
+    if (user==null ){
+        res.status(401).json({ message: "Please login and try again!" });
+        return;
+    }
     if( user.role =="admin" || user.email==email){
     Review.deleteOne({email:email})
     .then((review)=>{
@@ -54,4 +58,23 @@ export function deleteReview(req, res) {
     }else{
         res.status(403).json({message:"You are not authorized to delete this review"})
     }
+}
+
+export function approveReview(req, res) {
+    const email =req.params.email;
+    const user =req.user;
+    if(user==null){
+        res.status(401).json({ message: "Please login and try again!" });
+        return;
+    }
+    if( user.role =="admin"){
+        Review.updateOne({email:email},{isApproved:true})
+       .then(()=>{
+        res.json({message:"review has been approved"})
+       })
+       .catch((err)=>{
+        res.json({message:"review approval failed!",err})
+       })
+    }
+
 }
