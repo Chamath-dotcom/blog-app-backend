@@ -5,20 +5,18 @@ import dotenv  from 'dotenv';
 
 dotenv.config();
 
-export function registerUser(req,res){
+export async function registerUser(req,res){
   const userData =req.body;
   const salt =bcrypt.genSaltSync(10);
   userData.password= bcrypt.hashSync(userData.password,salt);
   const newUser =new User(userData);
-  newUser.save().then(
-    ()=>{
-        res.json({message :`${userData.firstName} registered`})
-    }
-  ).catch(
-    ()=>{
-        res.status(500).json({error :"User registetion faild"})    
-    }
-  )
+  try{
+    await newUser.save();
+    res.json({message :`${userData.firstName} registered`})
+  }catch{
+    res.status(500).json({error :"User registetion faild"})
+  }
+  
 }
 export function loginUser(req,res){
     const userData =req.body;
