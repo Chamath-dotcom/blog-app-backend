@@ -41,24 +41,38 @@ export async function getReviews(req, res) {
     }
 }
 
-export function deleteReview(req, res) {
+export async function deleteReview(req, res) {
     const user = req.user;
     const email = req.params.email;
-    if (user==null ){
-        res.status(401).json({ message: "Please login and try again!" });
-        return;
+    
+    try{
+        if(user==null){
+            res.status(401).json({ message: "Please login and try again!" });
+            return;
+        }
+        if( user.role =="admin" || user.email==email)
+        {
+         try{
+            const deleteReview = await Review.deleteOne({email: email});
+            if(deleteReview){
+                res.json({message:"Review deleted successfully"})
+            }else{
+                res.status(404).json({message:"Review not found"})
+            }
+           }
+         catch(err){
+            res.status(500).json({message:"Failed to delete review",err})
+           }
+        }
+        else
+        {
+         res.status(403).json({message:"You are not authorized to delete this review"})
+        }
     }
-    if( user.role =="admin" || user.email==email){
-    Review.deleteOne({email:email})
-    .then((review)=>{
-        res.json({message:"your review has been deleted"})
-    })
-    .catch((err)=>{
-        res.json({message:"review deletion failed!",err})
-    })
-    }else{
-        res.status(403).json({message:"You are not authorized to delete this review"})
+    catch(err){
+        res.status(500).json({message:"Failed to delete review",err})
     }
+    
 }
 
 export function approveReview(req, res) {
