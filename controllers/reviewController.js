@@ -1,6 +1,6 @@
 import Review from "../models/review.js";
 
-export function addReview(req, res) {
+export async function addReview(req, res) {
     console.log(req.user);
     if (req.user == null) {
         res.status(401).json({ message: "Please login and try again!" });
@@ -14,32 +14,33 @@ export function addReview(req, res) {
 
     const newReview = new Review(reviewData);
 
-    newReview.save()
-       .then(() => {
-            res.json({ message: "Review added successfully!" });
-        })
-       .catch(() => {
-            res.status(500).json({ error: "Failed to add review" });
-        });
+    try{
+        await newReview.save();
+        res.json({ message: "Review added successfully!" });
+    }catch(err){
+         res.status(500).json({ error: "Failed to add review" });
+    }
+
+    
 
     
 }
 
-export function getReviews(req, res) {
+export async function getReviews(req, res) {
     const user = req.user;
-
-    if (user==null ||user.role !=="admin"){
-        Review.findOne({isApproved : true}).then((reviews)=>{
+    try {
+        if (user == null || user.role !== "admin") {
+            const reviews = await Review.findOne({ isApproved: true });
             res.json(reviews);
-            return;
-        })
-    }else{
-        Review.find().then((reviews)=>{
+        } else {
+            const reviews = await Review.find();
             res.json(reviews);
-            return;
-        })
+        }
+    } catch (error) {
+        res.status(500).json({ error: "An error occurred while fetching reviews." });
     }
 }
+
 export function deleteReview(req, res) {
     const user = req.user;
     const email = req.params.email;
