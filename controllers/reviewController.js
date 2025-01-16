@@ -75,21 +75,26 @@ export async function deleteReview(req, res) {
     
 }
 
-export function approveReview(req, res) {
+export async function approveReview(req, res) {
     const email =req.params.email;
     const user =req.user;
-    if(user==null){
-        res.status(401).json({ message: "Please login and try again!" });
-        return;
+
+    try{
+     if(user ==null){
+         res.status(401).json({ message: "Please login and try again!" });
+         return;
+     }
+     if(user.role =="admin"){
+        const approvedReview = await Review.updateOne({email:email,isApproved:true});
+        if(approvedReview){
+            res.json({message:"Review has been approved"})
+        }else{
+            res.status(404).json({message:"Review not found"})
+        }
+     }
     }
-    if( user.role =="admin"){
-        Review.updateOne({email:email},{isApproved:true})
-       .then(()=>{
-        res.json({message:"review has been approved"})
-       })
-       .catch((err)=>{
-        res.json({message:"review approval failed!",err})
-       })
+    catch(err){
+        res.status(500).json({message:"Failed to approve review",err})
     }
 
 }
