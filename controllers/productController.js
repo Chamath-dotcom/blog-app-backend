@@ -37,16 +37,36 @@ export async function getProduct(req,res){
 }
 
 export async function deleteProduct(req,res) {
-  const user =req.user;
-  const prod_key = req.params.prod_key;
-  if(user ==null || user.role !=="admin"){
-    res.json({message:"you can't delete thise product"})
-  }
-  try{
-    await Product.deleteOne( {prod_key:prod_key})
-    res.json({message:"your product has been deleted "})
-  }catch(err){
-    res.json({message:"somethind went wrong"})
-  }
+    const user = req.user;
+    const key = req.params.key;
+    
+    try{
+        if(user==null){
+            res.status(401).json({ message: "Please login and try again!" });
+            return;
+        }
+        if( user.role =="admin" )
+        {
+         try{
+            const deleteProduct = await Product.deleteOne({prod_key:key});
+            if(deleteProduct){
+                res.json({message:"Product deleted successfully"})
+            }else{
+                res.status(404).json({message:"Product not found"})
+            }
+           }
+         catch(err){
+            res.status(500).json({message:"Failed to delete Product",err})
+           }
+        }
+        else
+        {
+         res.status(403).json({message:"You are not authorized to delete this review"})
+        }
+    }
+    catch(err){
+        res.status(500).json({message:"Failed to delete Product",err})
+    }
+    
     
 }
