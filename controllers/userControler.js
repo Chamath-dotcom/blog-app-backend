@@ -14,7 +14,7 @@ export async function registerUser(req,res){
     await newUser.save();
     res.json({message :`${userData.firstName} registered`})
   }catch{
-    res.status(500).json({error :"User registetion faild"})
+    res.status(500).json({error :"User already registered"})
   }
   
 }
