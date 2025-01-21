@@ -23,12 +23,18 @@ export async function addProduct(req,res){
 }
 
 export async function getProduct(req,res){
+    const user =req.user;;
+    let isAdmin =false;
+    if(user !== null && user.role=="admin"){
+        isAdmin=true
+    }
     try{
-        const foundProd = await Product.find();
-        if(foundProd){
-            res.json({message:foundProd})
+        if(isAdmin){
+         const foundProd = await Product.find();
+         res.json({message:foundProd})            
         }else{
-            res.json({messag:"can't found product!"})
+         const foundProd = await Product.find({availability:true});
+         res.json({message:foundProd})
         }
     }catch{
         res.json({message :"something went wrong!!"})
