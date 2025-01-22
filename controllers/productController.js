@@ -1,4 +1,5 @@
 import Product from "../models/product.js";
+import { isItAdmin } from "./userControler.js";
 
 
 export async function addProduct(req,res){
@@ -24,12 +25,8 @@ export async function addProduct(req,res){
 
 export async function getProduct(req,res){
     const user =req.user;;
-    let isAdmin =false;
-    if(user !== null && user.role=="admin"){
-        isAdmin=true
-    }
     try{
-        if(isAdmin){
+        if( isItAdmin(req)){
          const foundProd = await Product.find();
          res.json({message:foundProd})            
         }else{
@@ -44,30 +41,17 @@ export async function getProduct(req,res){
 
 export async function deleteProduct(req,res) {
     const user = req.user;
-    const key = req.params.key;
+    const prod_key = req.params.prod_key;
     
     try{
-        if(user==null){
-            res.status(401).json({ message: "Please login and try again!" });
-            return;
+        if(isItAdmin(req) ){
+
+        await Product.deleteOne({prod_key:prod_key});
+        res.json({message:"Product deleted successfully"})
         }
-        if( user.role =="admin" )
-        {
-         try{
-            const deleteProduct = await Product.deleteOne({prod_key:key});
-            if(deleteProduct){
-                res.json({message:"Product deleted successfully"})
-            }else{
-                res.status(404).json({message:"Product not found"})
-            }
-           }
-         catch(err){
-            res.status(500).json({message:"Failed to delete Product",err})
-           }
-        }
-        else
-        {
-         res.status(403).json({message:"You are not authorized to delete this review"})
+        else{
+        res.status(403).json({message:"You are not authorized to delete this review"})
+        return
         }
     }
     catch(err){
@@ -76,3 +60,32 @@ export async function deleteProduct(req,res) {
     
     
 }
+
+export async function updateProduct(req,res){
+    try{
+      if(isItAdmin(req)){
+        const prod_key= req.params.prod_key;
+        const data = req.body
+  
+        await Product.updateOne({prod_key:prod_key},data)
+  
+        res.json({
+          message : "Product updated successfully"
+        })
+        return;
+  
+      }else{
+        res.status(403).json({
+          message : "You are not authorized to perform this action"
+        })
+        return;
+      }
+  
+    }catch(e){
+      res.status(500).json({
+        message : "Failed to update product"
+      })
+    }
+  }
+
+

@@ -20,6 +20,7 @@ export async function registerUser(req,res){
 }
 export function loginUser(req,res){
     const userData =req.body;
+    console.log( userData);
     User.findOne({email: userData.email})
     .then((user)=>{
         if(user ==null)
@@ -44,4 +45,23 @@ export function loginUser(req,res){
         }
         
     })
+}
+
+
+
+
+
+
+
+
+
+
+
+export function isItAdmin(req){
+  const user =req.user;
+  let isAdmin =false;
+  if(user !== null && user.role=="admin"){
+      isAdmin=true
+  }
+  return isAdmin;
 }
