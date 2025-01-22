@@ -40,18 +40,27 @@ export async function getProduct(req,res){
 }
 
 export async function deleteProduct(req,res) {
-    const user = req.user;
-    const prod_key = req.params.prod_key;
     
     try{
         if(isItAdmin(req) ){
+        const prod_key = req.params.prod_key;
+        
+        const result = await Product.deleteOne({prod_key:prod_key});
 
-        await Product.deleteOne({prod_key:prod_key});
-        res.json({message:"Product deleted successfully"})
-        }
-        else{
-        res.status(403).json({message:"You are not authorized to delete this review"})
-        return
+        if (result.deletedCount === 0) {
+
+            res.status(404).json({ message: "Product not found or already deleted" });
+            return;
+          }
+
+          console.log(`${prod_key} is deleted`);
+          res.json({ message: "Product deleted successfully" });
+
+        } else {
+
+          res.status(403).json({ message: "You are not authorized to delete this product" });
+          return;
+
         }
     }
     catch(err){
