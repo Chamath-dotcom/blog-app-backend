@@ -35,7 +35,8 @@ export function loginUser(req,res){
                 lastName:user.lastName,
                 email:user.email,
                 role:user.role,
-                profilePicture:user.profilePicture
+                profilePicture:user.profilePicture,
+                phone:user.phone
             },process.env.SECRET_KEY)
             res.json({message :`${user.firstName} loged`,token :token})
         }else
@@ -64,4 +65,12 @@ export function isItAdmin(req){
       isAdmin=true
   }
   return isAdmin;
+}
+export function isItCustomer(req){
+  const user = req.user;
+  let isCostermer = false;
+  if(user !==null && user.role=="user"){
+    isCostermer=true
+  }
+  return isCostermer;
 }
