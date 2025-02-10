@@ -7,11 +7,13 @@ import productRoute from './routers/productRoute.js';
 import dotenv from 'dotenv'
 import reviewRoute from './routers/reviewRoute.js';
 import inquiryRoute from './routers/inquiryRoute.js';
+import cors from "cors";
 
 
 dotenv.config();
 
 const app = express();
+app.use(cors());
 const PORT = 5000
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
