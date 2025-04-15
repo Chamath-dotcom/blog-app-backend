@@ -38,10 +38,10 @@ export function loginUser(req,res){
                 profilePicture:user.profilePicture,
                 phone:user.phone
             },process.env.SECRET_KEY)
-            res.json({message :`${user.firstName} loged`,token :token})
+            res.json({message :`${user.firstName} loged`,token :token,user :user})
         }else
         {
-        res.json({error :"incorrect password"});
+        res.status(401).json({error :"incorrect password"});
         }
         }
         
