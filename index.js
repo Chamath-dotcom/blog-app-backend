@@ -3,23 +3,21 @@ import express from 'express';
 import mongoose from 'mongoose';
 import userRoute from './routers/userRoute.js';
 import jwt from 'jsonwebtoken'
-import productRoute from './routers/productRoute.js';
 import dotenv from 'dotenv'
-import reviewRoute from './routers/reviewRoute.js';
-import inquiryRoute from './routers/inquiryRoute.js';
 import cors from "cors";
+import postRoute from './routers/postRoute.js';
 
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
-const PORT = 5000
+const PORT = 8000
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-const mongoUrl = "mongodb+srv://admin:123@cluster0.f1hjr.mongodb.net/kv_audio?retryWrites=true&w=majority&appName=Cluster0";
+const mongoUrl = "mongodb+srv://root:123@cluster0.7o0t5wc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 mongoose.connect(mongoUrl);
 const connection =mongoose.connection;
 connection.once('open',()=>{
@@ -51,6 +49,4 @@ app.use((req,res,next)=>{
 })
 
 app.use("/api/users",userRoute);
-app.use("/api/product",productRoute);
-app.use("/api/review",reviewRoute);
-app.use("/api/inquiry",inquiryRoute);
+app.use("/api/post", postRoute);
