@@ -107,10 +107,10 @@ export function isItCustomer(req){
 export async function getUserByAuthor(req, res) {
   const { author } = req.query;
   if (!author) return res.status(400).json({ message: "No author provided" });
-  const user = await User.findOne({ 
-    $expr: { 
+  const user = await User.findOne({
+    $expr: {
       $eq: [
-        { $concat: [ "$firstName", " ", "$lastName" ] }, 
+        { $concat: ["$firstName", " ", "$lastName"] },
         author
       ]
     }

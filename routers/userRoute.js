@@ -16,7 +16,12 @@ const upload = multer({ storage });
 
 userRoute.post("/register", upload.single("profilePicture"), registerUser);
 userRoute.post("/login", loginUser);
-userRoute.get("/", getAllUsers);
+userRoute.get("/", (req, res, next) => {
+  if (req.query.author) {
+    return getUserByAuthor(req, res, next);
+  }
+  return getAllUsers(req, res, next);
+});
 userRoute.put("/update", upload.single("profilePicture"), updateUser);
 userRoute.post("/follow", followUser);
 userRoute.post("/unfollow", unfollowUser);
