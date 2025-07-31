@@ -1,5 +1,5 @@
 import express from "express";
-import { loginUser, registerUser, getAllUsers, updateUser } from '../controllers/userControler.js'
+import { loginUser, registerUser, getAllUsers, updateUser, getUserByAuthor, followUser, unfollowUser, getMe } from '../controllers/userControler.js'
 import multer from "multer";
 
 const userRoute = express.Router();
@@ -18,5 +18,8 @@ userRoute.post("/register", upload.single("profilePicture"), registerUser);
 userRoute.post("/login", loginUser);
 userRoute.get("/", getAllUsers);
 userRoute.put("/update", upload.single("profilePicture"), updateUser);
+userRoute.post("/follow", followUser);
+userRoute.post("/unfollow", unfollowUser);
+userRoute.get("/me", getMe);
 
 export default userRoute;
