@@ -1,4 +1,5 @@
 import Post from "../models/post.js";
+import User from "../models/user.js"; // Import your User model
 
 export async function addPost(req, res) {
   try {
@@ -9,11 +10,15 @@ export async function addPost(req, res) {
       return res.status(400).json({ message: "Title and content are required." });
     }
 
+    // Fetch user info
+    const user = await User.findOne({ email: req.user.email });
+    const authorName = user ? `${user.firstName} ${user.lastName}` : req.user.email;
+
     const newPost = new Post({
       title,
       content,
-      author: req.user.email,
-      image, // Save image filename
+      author: authorName, // Save name instead of email
+      image,
     });
 
     const response = await newPost.save();
@@ -119,5 +124,63 @@ export async function getPostById(req, res) {
     res.json(post);
   } catch (e) {
     res.status(500).json({ message: "Failed to fetch post" });
+  }
+}
+
+export async function getAllPosts(req, res) {
+  try {
+    const posts = await Post.find().sort({ createdAt: -1 });
+    res.json(posts);
+  } catch (e) {
+    res.status(500).json({ message: "Failed to fetch posts" });
+  }
+}
+
+export async function updatePost(req, res) {
+  try {
+    const postId = req.params.id;
+    const { title, content } = req.body;
+    const user = await User.findOne({ email: req.user.email });
+    const authorName = user ? `${user.firstName} ${user.lastName}` : req.user.email;
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    // Allow author or admin to update
+    if (post.author !== authorName && user.role !== "admin") {
+      return res.status(403).json({ message: "You are not authorized to update this post." });
+    }
+
+    post.title = title || post.title;
+    post.content = content || post.content;
+    if (req.file) {
+      post.image = req.file.filename;
+    }
+    await post.save();
+
+    res.json({ message: "Post updated successfully", post });
+  } catch (e) {
+    res.status(500).json({ message: "Failed to update post" });
+  }
+}
+
+export async function deletePost(req, res) {
+  try {
+    const postId = req.params.id;
+    const user = await User.findOne({ email: req.user.email });
+    const authorName = user ? `${user.firstName} ${user.lastName}` : req.user.email;
+
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    // Only author or admin can delete
+    if (post.author !== authorName && user.role !== "admin") {
+      return res.status(403).json({ message: "You are not authorized to delete this post." });
+    }
+
+    await Post.findByIdAndDelete(postId);
+    res.json({ message: "Post deleted successfully" });
+  } catch (e) {
+    res.status(500).json({ message: "Failed to delete post" });
   }
 }

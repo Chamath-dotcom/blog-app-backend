@@ -50,3 +50,4 @@ app.use((req,res,next)=>{
 
 app.use("/api/users",userRoute);
 app.use("/api/post", postRoute);
+app.use('/uploads', express.static('uploads'));

@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { addPost, likePost, addComment, sharePost, getPostById } from '../controllers/postController.js';
+import { addPost, likePost, addComment, sharePost, getPostById, getAllPosts, updatePost, deletePost } from '../controllers/postController.js';
 
 const postRoute = express.Router();
 
@@ -32,5 +32,14 @@ postRoute.post("/share/:id", sharePost);
 
 // Get a post by ID (for sharing)
 postRoute.get("/:id", getPostById);
+
+// Get all posts
+postRoute.get("/", getAllPosts);
+
+// Update a post
+postRoute.put("/update/:id", upload.single('image'), updatePost);
+
+// Delete a post
+postRoute.delete("/delete/:id", deletePost);
 
 export default postRoute;

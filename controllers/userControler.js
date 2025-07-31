@@ -7,6 +7,9 @@ dotenv.config();
 
 export async function registerUser(req,res){
   const userData =req.body;
+  if (req.file) {
+    userData.profilePicture = req.file.filename;
+  }
   const salt =bcrypt.genSaltSync(10);
   userData.password= bcrypt.hashSync(userData.password,salt);
   const newUser =new User(userData);
@@ -48,15 +51,41 @@ export function loginUser(req,res){
     })
 }
 
+export async function getAllUsers(req, res) {
+  try {
+    const users = await User.find().sort({ createdAt: -1 });
+    res.json(users);
+  } catch (e) {
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+}
 
+export async function updateUser(req, res) {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const updateData = req.body;
+    if (req.file) {
+      updateData.profilePicture = req.file.filename;
+    }
+    const user = await User.findOneAndUpdate(
+      { email: decoded.email },
+      updateData,
+      { new: true }
+    );
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-
-
-
-
-
-
-
+    // Fix: Always send full URL for profilePicture
+    const userObj = user.toObject();
+    if (userObj.profilePicture && !userObj.profilePicture.startsWith("http")) {
+      userObj.profilePicture = `${process.env.BACKEND_URL || "http://localhost:5173"}/uploads/${userObj.profilePicture}`;
+    }
+    res.json(userObj);
+  } catch (e) {
+    res.status(500).json({ message: "Failed to update user" });
+  }
+}
 
 export function isItAdmin(req){
   const user =req.user;
