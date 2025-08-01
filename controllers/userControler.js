@@ -110,8 +110,8 @@ export async function getUserByAuthor(req, res) {
   const user = await User.findOne({
     $expr: {
       $eq: [
-        { $concat: ["$firstName", " ", "$lastName"] },
-        author
+        { $toLower: { $concat: ["$firstName", " ", "$lastName"] } },
+        author.trim().toLowerCase()
       ]
     }
   });
